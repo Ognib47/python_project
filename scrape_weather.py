@@ -3,7 +3,14 @@ import urllib.request
 from html.entities import name2codepoint
 
 class MyHTMLParser(HTMLParser):
+  """
+    Parser class used to scrape weather data from
+    Governament of Canada weather page.
+  """
   def __init__(self):
+    """
+      Initialize variables used to parse the data.
+    """
     HTMLParser.__init__(self)
     self.attr_value = ''
     self.nested_data = {}
@@ -19,6 +26,10 @@ class MyHTMLParser(HTMLParser):
     self.dict_count = 1
 
   def handle_starttag(self, tag, attrs):
+    """
+      Detects the starting tags to look for the wanted
+      data values.
+    """
     if tag == 'tbody':
       self.inLink = True
     if tag == 'tr':
@@ -29,6 +40,9 @@ class MyHTMLParser(HTMLParser):
       self.last_tag = tag
 
   def handle_endtag(self, tag):
+    """
+      Detects end tags and shuts off the data.
+    """
     if tag == 'tbody':
       self.inLink = False
     if tag == 'tr':
@@ -37,9 +51,12 @@ class MyHTMLParser(HTMLParser):
     if tag == 'td':
       self.inTd = False
 
-
-
   def handle_data(self, data):
+    """
+      Creates a list of dictionaries containing the
+      data to seed a database.
+
+    """
     if self.inLink and self.inTr and self.inTd and self.last_tag == 'td' and self.count <= 3 and data.strip():
       if self.count == 1:
         self.max_temp = data

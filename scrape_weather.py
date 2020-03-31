@@ -14,7 +14,7 @@ class MyHTMLParser(HTMLParser):
     HTMLParser.__init__(self)
     self.attr_value = ''
     self.nested_data = {}
-    self.data = []
+    self.data = {}
     self.inLink = False
     self.inTd = False
     self.inTr = False
@@ -24,6 +24,7 @@ class MyHTMLParser(HTMLParser):
     self.min_temp = None
     self.mean_temp = None
     self.dict_count = 1
+    self.the_date = None
 
   def handle_starttag(self, tag, attrs):
     """
@@ -34,6 +35,10 @@ class MyHTMLParser(HTMLParser):
       self.inLink = True
     if tag == 'tr':
       self.inTr = True
+    if tag == 'abbr':
+      for name, value in attrs:
+        if name == 'title':
+          self.the_date = value
     if tag == 'td':
       self.count += 1
       self.inTd = True
@@ -66,12 +71,14 @@ class MyHTMLParser(HTMLParser):
         self.mean_temp = data
       if self.count == 3:
         self.nested_data.update({'max_temp': self.max_temp, 'min_temp': self.min_temp, 'mean_temp': self.mean_temp})
-        self.data.append(self.nested_data)
+        self.data.update({self.the_date: self.nested_data})
         self.nested_data = {}
 
 myparser = MyHTMLParser()
 with urllib.request.urlopen('https://climate.weather.gc.ca/climate_data/daily_data_e.html?StationID=27174&timeframe=2&StartYear=2018&EndYear=2018&Day=1&Year=2018&Month=1') as response:
   res = str(response.read().decode())
   myparser.feed(res)
-  myparser.data.pop(-1)
-print(myparser.data)
+  myparser.data.popitem()
+
+for k, v in myparser.data.items():
+  print(k + ': ' + str(v))

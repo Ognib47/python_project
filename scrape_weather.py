@@ -1,6 +1,7 @@
 from html.parser import HTMLParser
 import urllib.request
 from html.entities import name2codepoint
+from datetime import datetime
 
 class MyHTMLParser(HTMLParser):
   """
@@ -75,11 +76,14 @@ class MyHTMLParser(HTMLParser):
         self.nested_data = {}
 
 myparser = MyHTMLParser()
-with urllib.request.urlopen('https://climate.weather.gc.ca/climate_data/daily_data_e.html?StationID=27174&timeframe=2&StartYear=2018&EndYear=2018&Day=1&Year=2018&Month=2') as response:
-  res = str(response.read().decode())
-  myparser.feed(res)
-  myparser.data.popitem()
+# StartYear=2018&EndYear=2018&Day=1&
+for year in range(1840, 2021 ):
+    for month in range(1, 13):
+      with urllib.request.urlopen('https://climate.weather.gc.ca/climate_data/daily_data_e.html?StationID=27174&timeframe=2&Year=' + str(year) + '&Month=' + str(month)) as response:
+        res = str(response.read().decode())
+        myparser.feed(res)
+        myparser.data.popitem()
 
-# for k, v in myparser.data.items():
-#   print(k + ': ' + str(v))
-print(str(myparser.data))
+for k, v in myparser.data.items():
+  print(k + ': ' + str(v))
+# print(str(myparser.data))

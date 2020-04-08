@@ -6,12 +6,8 @@ db = DBOperations()
 
 db_dict = make_dict()
 
-# db.createTable()
+db.createTable()
 
-# db.insertData(db_dict)
-# db.printData()
+db.insertData(db_dict)
+db.printData()
 
-# for k, v in db_dict.items():
-#   print(k + ': ' + str(v))
-
-print(str(db_dict))

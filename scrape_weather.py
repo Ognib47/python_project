@@ -26,6 +26,8 @@ class MyHTMLParser(HTMLParser):
     self.mean_temp = None
     self.dict_count = 1
     self.the_date = None
+    self.inFormat = "%B %d, %Y"
+    self.outFormat = "%Y-%m-%d"
 
   def handle_starttag(self, tag, attrs):
     """
@@ -36,9 +38,9 @@ class MyHTMLParser(HTMLParser):
       self.inLink = True
     if tag == 'tr':
       self.inTr = True
-    if tag == 'abbr':
+    if tag == 'abbr' and self.inLink and self.inTr:
       for name, value in attrs:
-        if name == 'title':
+        if name == 'title' and value != 'Average':
           self.the_date = value
     if tag == 'td':
       self.count += 1
@@ -72,18 +74,9 @@ class MyHTMLParser(HTMLParser):
         self.mean_temp = data
       if self.count == 3:
         self.nested_data.update({'max_temp': self.max_temp, 'min_temp': self.min_temp, 'mean_temp': self.mean_temp})
-        self.data.update({self.the_date: self.nested_data})
+        self.data.update({datetime.strptime(self.the_date, self.inFormat).strftime(self.outFormat): self.nested_data})
         self.nested_data = {}
 
-myparser = MyHTMLParser()
-# StartYear=2018&EndYear=2018&Day=1&
-for year in range(1840, 2021 ):
-    for month in range(1, 13):
-      with urllib.request.urlopen('https://climate.weather.gc.ca/climate_data/daily_data_e.html?StationID=27174&timeframe=2&Year=' + str(year) + '&Month=' + str(month)) as response:
-        res = str(response.read().decode())
-        myparser.feed(res)
-        myparser.data.popitem()
 
-for k, v in myparser.data.items():
-  print(k + ': ' + str(v))
-# print(str(myparser.data))
+
+

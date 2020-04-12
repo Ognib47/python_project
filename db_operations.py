@@ -6,6 +6,7 @@ class DBOperations():
 
     self.conn = None
     self.cursor = None
+    self.list = []
 
   def createTable(self):
     self.conn = sqlite3.connect("weather.sqlite")
@@ -27,6 +28,15 @@ class DBOperations():
     self.conn.commit()
     self.conn.close()
 
+  def plotData(self, year):
+    self.conn = sqlite3.connect("weather.sqlite")
+    self.cursor = self.conn.cursor()
+    _SQL = "select date, avg_temp from weather where date LIKE '%{}%'".format(year)
+    self.cursor.execute(_SQL)
+    for row in self.cursor.fetchall():
+      self.list.append(row)
+
+    return self.list
 
   def printData(self):
     self.conn = sqlite3.connect("weather.sqlite")
@@ -36,3 +46,13 @@ class DBOperations():
     self.cursor.execute(_SQL)
     for row in self.cursor.fetchall():
       print(row)
+
+  def makePlotData(self, weather_data):
+    data_dict = dict()
+    for date in weather_data:
+      date_list = date[0].split('-')
+      if(str(date_list[1]) not in data_dict):
+        data_dict[date_list[1]]=[]
+      if(type(date[1]) is float):
+        data_dict[date_list[1]].append(date[1])
+    return data_dict

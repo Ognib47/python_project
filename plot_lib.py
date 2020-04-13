@@ -4,7 +4,7 @@ from db_operations import DBOperations
 
 db = DBOperations()
 
-def makePlot(year):
+def makePlot(start_year, end_year):
   # Plot part
   spread = np.random.rand(50) * 100
   center = np.ones(25) * 50
@@ -14,7 +14,7 @@ def makePlot(year):
   data.shape = (-1, 1)
 
   data = []
-  for k, v in db.makePlotData(db.plotData(year)).items():
+  for k, v in db.makePlotData(db.plotData(start_year, end_year)).items():
     data.append(v)
   print(data)
   # multiple box plots on one figure

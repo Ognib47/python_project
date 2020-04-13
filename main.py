@@ -12,4 +12,5 @@ db = DBOperations()
 # db.printData()
 
 
-makePlot("2018")
+# makePlot(2018, 2020)
+print(db.plotData(2018, 2020))

@@ -6,7 +6,7 @@ data_dict = {}
 date = []
 date_list = []
 new_list = []
-data_list = db.plotData(2018, 2020)
+data_list = db.plotData(2017, 2020)
 
 for data in data_list:
   date = data[0].split('-')

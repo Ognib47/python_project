@@ -31,7 +31,7 @@ class DBOperations():
   def plotData(self, start_year, end_year):
     self.conn = sqlite3.connect("weather.sqlite")
     self.cursor = self.conn.cursor()
-    _SQL = "select date, avg_temp from weather where date BETWEEN '{}-01-01 AND' AND '{}-12-31'".format(str(start_year), str( end_year))
+    _SQL = "select date, avg_temp from weather where date BETWEEN '{}-01-01 AND' AND '{}-12-31'".format(start_year, end_year)
     self.cursor.execute(_SQL)
     for row in self.cursor.fetchall():
       self.list.append(row)
@@ -47,12 +47,12 @@ class DBOperations():
     for row in self.cursor.fetchall():
       print(row)
 
-  def makePlotData(self, weather_data):
-    data_dict = dict()
-    for date in weather_data:
-      date_list = date[0].split('-')
-      if(str(date_list[1]) not in data_dict):
-        data_dict[date_list[1]] = []
-      if(type(date[1]) is float):
-        data_dict[date_list[1]].append(date[1])
-    return data_dict
+  # def makePlotData(self, weather_data):
+  #   data_dict = dict()
+  #   for date in weather_data:
+  #     date_list = date[0].split('-')
+  #     if(str(date_list[1]) not in data_dict):
+  #       data_dict[date_list[1]] = []
+  #     if(type(date[1]) is float):
+  #       data_dict[date_list[1]].append(date[1])
+  #   return data_dict

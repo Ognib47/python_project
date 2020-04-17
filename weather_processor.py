@@ -1,3 +1,6 @@
+"""
+  WeatherProcessor class used to control flow of the application.
+"""
 from db_operations import DBOperations
 from plot_lib import makePlot
 from make_dict import make_dict
@@ -6,8 +9,13 @@ import numpy as np
 
 
 class WeatherProcessor():
-
+  """
+    WeatherProcessor class controls application flow.
+  """
   def __init__(self):
+    """
+      Initialize variables used in the WeatherProcessor class.
+    """
     self.start_year = None
     self.end_year = None
     self.yes_no = None
@@ -18,6 +26,10 @@ class WeatherProcessor():
     self.data_dict = {}
 
   def startUp(self):
+    """
+      Initial function that runs asks user if they want to create a weather
+      data base. If its been created this will no longer run.
+    """
 
     if not self.data_base_made:
       self.yes_no =  input("Do you want to dowload weather information(Y/N): ").upper()
@@ -33,21 +45,24 @@ class WeatherProcessor():
     self.makePlot()
 
   def makePlot(self):
+    """
+      Takes user input passes it to Db function to return
+      data needed to make the plot graph. Runs plot graph code.
+    """
     self.start_year = input('Enter start year for weather data: ')
     self.end_year = input('Enter end year for weather data: ')
 
     db = DBOperations()
-    monthCollection = {}
+    month = {}
     data = []
-
     data_list = db.plotData(self.start_year, self.end_year)
 
     for date in  data_list:
-      dateInfolist = date[0].split('-')
-      if(str(dateInfolist[1]) not in monthCollection):
-        monthCollection[dateInfolist[1]]=[]
+      date_list = date[0].split('-')
+      if(str(date_list[1]) not in month):
+        month[date_list[1]] = []
       if(type(date[1]) is float):
-        monthCollection[dateInfolist[1]].append(date[1])
+        month[date_list[1]].append(date[1])
 
     spread = np.random.rand(50) * 100
     center = np.ones(25) * 50
@@ -57,7 +72,7 @@ class WeatherProcessor():
     data.shape = (-1, 1)
 
 
-    for k, v in monthCollection.items():
+    for k, v in month.items():
       data.append(v)
 
     fig, ax1 = plt.subplots(figsize=(10, 6))
@@ -67,7 +82,6 @@ class WeatherProcessor():
     ax1.set_ylabel('Temperature (Celsius)')
     ax1.boxplot(data)
     plt.show()
-
 
 my_pro = WeatherProcessor()
 my_pro.startUp()

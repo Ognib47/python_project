@@ -1,3 +1,6 @@
+"""
+  Scrapes weather data from government weather website.
+"""
 from html.parser import HTMLParser
 import urllib.request
 from html.entities import name2codepoint
@@ -51,6 +54,7 @@ class MyHTMLParser(HTMLParser):
     """
       Detects end tags and shuts off the data.
     """
+
     if tag == 'tbody':
       self.inLink = False
     if tag == 'tr':
@@ -63,8 +67,8 @@ class MyHTMLParser(HTMLParser):
     """
       Creates a list of dictionaries containing the
       data to seed a database.
-
     """
+
     if self.inLink and self.inTr and self.inTd and self.last_tag == 'td' and self.count <= 3 and data.strip():
       if self.count == 1:
         self.max_temp = data
@@ -76,7 +80,3 @@ class MyHTMLParser(HTMLParser):
         self.nested_data.update({'max_temp': self.max_temp, 'min_temp': self.min_temp, 'mean_temp': self.mean_temp})
         self.data.update({datetime.strptime(self.the_date, self.inFormat).strftime(self.outFormat): self.nested_data})
         self.nested_data = {}
-
-
-
-

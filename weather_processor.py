@@ -26,6 +26,7 @@ class WeatherProcessor():
       self.db_data = make_dict()
       db.insertData(self.db_data)
       self.data_base_made = True
+      self.db_data_list = []
 
     if self.yes_no == 'N' or self.data_base_made:
       pass
@@ -37,22 +38,27 @@ class WeatherProcessor():
     self.end_year = input('Enter end year for weather data: ')
 
     db = DBOperations()
-
-    self.db_data = db.plotData(self.start_year, self.end_year)
-
-    for data in self.db_data:
+    data_dict = {}
+    date = []
+    date_list = []
+    new_list = []
+    data_list = db.plotData(self.start_year, self.end_year)
+    for data in data_list:
       date = data[0].split('-')
-    if date[1] not in self.date_list:
-      self.date_list.append(date[1])
+    if date[1] not in date_list:
+      date_list.append(date[1])
 
-    for month in self.date_list:
-      for data in self.db_data:
+    for month in date_list:
+      for data in data_list:
         date = data[0].split('-')
         if month == date[1]:
-          self.new_list.append(data[1])
-      self.data_dict.update({month: self.new_list})
-      self.new_list = []
-
+          new_list.append(data[1])
+      data_dict.update({month: new_list})
+      new_list = []
+    print(data_dict)
+    data = []
+    for k, v in data_dict.items():
+      data.append(v)
     spread = np.random.rand(50) * 100
     center = np.ones(25) * 50
     flier_high = np.random.rand(10) * 100 + 100
@@ -65,7 +71,7 @@ class WeatherProcessor():
     ax1.set_title('Monthly Temperature Distribution for: {} to {} '.format(self.start_year, self.end_year))
     ax1.set_xlabel('Month')
     ax1.set_ylabel('Temperature (Celsius)')
-    ax1.boxplot(self.new_list)
+    ax1.boxplot(data)
 
     plt.show()
 

@@ -14,7 +14,7 @@ data_dict = {}
 def make_dict():
   """
     Function gets all available data from government weather
-    website. Returns a dictionary.
+    website.
   """
   for year in range(1996, today.year + 1):
       for month in range(1, 13):
@@ -24,3 +24,5 @@ def make_dict():
           myparser.data.popitem()
           data_dict = myparser.data
   return data_dict
+
+

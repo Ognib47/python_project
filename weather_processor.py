@@ -18,18 +18,17 @@ class WeatherProcessor():
     self.data_dict = {}
 
   def startUp(self):
-    self.yes_no =  input("Do you want to dowload weather information(Y/N): ")
 
-    if self.yes_no == 'Y' and not self.data_base_made:
-      db = DBOperations()
-      db.createTable()
-      self.db_data = make_dict()
-      db.insertData(self.db_data)
-      self.data_base_made = True
-      self.db_data_list = []
+    if not self.data_base_made:
+      self.yes_no =  input("Do you want to dowload weather information(Y/N): ").upper()
 
-    if self.yes_no == 'N' or self.data_base_made:
-      pass
+      if self.yes_no == 'Y':
+        db = DBOperations()
+        db.createTable()
+        self.db_data = make_dict()
+        db.insertData(self.db_data)
+        self.data_base_made = True
+        self.db_data_list = []
 
     self.makePlot()
 
@@ -38,27 +37,18 @@ class WeatherProcessor():
     self.end_year = input('Enter end year for weather data: ')
 
     db = DBOperations()
-    data_dict = {}
-    date = []
-    date_list = []
-    new_list = []
-    data_list = db.plotData(self.start_year, self.end_year)
-    for data in data_list:
-      date = data[0].split('-')
-    if date[1] not in date_list:
-      date_list.append(date[1])
-
-    for month in date_list:
-      for data in data_list:
-        date = data[0].split('-')
-        if month == date[1]:
-          new_list.append(data[1])
-      data_dict.update({month: new_list})
-      new_list = []
-    print(data_dict)
+    monthCollection = {}
     data = []
-    for k, v in data_dict.items():
-      data.append(v)
+
+    data_list = db.plotData(self.start_year, self.end_year)
+
+    for date in  data_list:
+      dateInfolist = date[0].split('-')
+      if(str(dateInfolist[1]) not in monthCollection):
+        monthCollection[dateInfolist[1]]=[]
+      if(type(date[1]) is float):
+        monthCollection[dateInfolist[1]].append(date[1])
+
     spread = np.random.rand(50) * 100
     center = np.ones(25) * 50
     flier_high = np.random.rand(10) * 100 + 100
@@ -66,13 +56,16 @@ class WeatherProcessor():
     data = np.concatenate((spread, center, flier_high, flier_low), 0)
     data.shape = (-1, 1)
 
+
+    for k, v in monthCollection.items():
+      data.append(v)
+
     fig, ax1 = plt.subplots(figsize=(10, 6))
     fig.canvas.set_window_title('A Boxplot Example')
     ax1.set_title('Monthly Temperature Distribution for: {} to {} '.format(self.start_year, self.end_year))
     ax1.set_xlabel('Month')
     ax1.set_ylabel('Temperature (Celsius)')
     ax1.boxplot(data)
-
     plt.show()
 
 

@@ -2,3 +2,5 @@
 /build
 /dist
 /.pytest_cache
+weather_processor.spec
+weather.sqlite

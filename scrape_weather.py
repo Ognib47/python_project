@@ -1,4 +1,5 @@
 """
+  Created by: Chris Podolsky
   Scrapes weather data from government weather website.
 """
 from html.parser import HTMLParser
@@ -8,12 +9,14 @@ from datetime import datetime
 
 class MyHTMLParser(HTMLParser):
   """
+    Created by: Chris Podolsky
     Parser class used to scrape weather data from
     Governament of Canada weather page.
   """
   def __init__(self):
     """
-      Initialize variables used to parse the data.
+      Created by: Chris Podolsky
+      Initialize variables used to parse data.
     """
     HTMLParser.__init__(self)
     self.attr_value = ''
@@ -31,12 +34,22 @@ class MyHTMLParser(HTMLParser):
     self.the_date = None
     self.inFormat = "%B %d, %Y"
     self.outFormat = "%Y-%m-%d"
+    self.title = False
+    self.head = False
+    self.current_title = None
+    self.previous_title = None
 
   def handle_starttag(self, tag, attrs):
     """
+      Created by: Chris Podolsky
       Detects the starting tags to look for the wanted
-      data values.
+      data values.Sets flag variables to true to control
+      the data flow.
     """
+    if tag == 'head':
+      self.head = True
+    if tag == 'title':
+      self.title = True
     if tag == 'tbody':
       self.inLink = True
     if tag == 'tr':
@@ -52,9 +65,10 @@ class MyHTMLParser(HTMLParser):
 
   def handle_endtag(self, tag):
     """
-      Detects end tags and shuts off the data.
+      Created by: Chris Podolsky
+      Detects end tags and sets flag variables to false
+      this is used to control the data flow.
     """
-
     if tag == 'tbody':
       self.inLink = False
     if tag == 'tr':
@@ -62,13 +76,22 @@ class MyHTMLParser(HTMLParser):
       self.count = 0
     if tag == 'td':
       self.inTd = False
+    if tag == 'title':
+      self.title = False
+    if tag == 'head':
+      self.head = False
 
   def handle_data(self, data):
     """
+      Created by: Chris Podolsky
       Creates a list of dictionaries containing the
       data to seed a database.
     """
-
+    if self.title and self.head and data.strip():
+      self.previous_title = None
+      self.previous_title = self.current_title
+      self.current_title = None
+      self.current_title = data
     if self.inLink and self.inTr and self.inTd and self.last_tag == 'td' and self.count <= 3 and data.strip():
       if self.count == 1:
         self.max_temp = data
